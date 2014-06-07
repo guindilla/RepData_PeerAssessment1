@@ -1,5 +1,14 @@
 # Reproducible Research: Peer Assessment 1
 
+In this assignment we have been asked to write a report that answers the questions detailed below. The entire assignement must be completed in a single R markdown document that can be processed by knitr and be transformed into an HTML file. The present file represents the mentioned file.
+
+First, let's make sure that the code is always included in the report by default.
+
+```{r, echo=TRUE}
+library(knitr)
+opts_chunk$set(echo = TRUE)
+```
+
 
 ## Getting the data
 The first thing is to check if the zip file has already been downloaded. If not, download it.
@@ -45,11 +54,25 @@ Let's first calculate the total number of steps per day.
 ```{r}
 library(plyr)
 data.day <- ddply(data, .(date), summarize, sum=sum(steps))
-data.day <- tapply(data$steps, data$date, sum)
-data.day <- as.data.frame(data.day)
 ```
 
+Let's plot the histogram with the total number of steps taken per day. We will do it with the ggplot2 library.
+```{r, fig.width=6, fig.height=4}
+library(ggplot2)
+graph <- ggplot(data.day, aes(x=sum))
+graph <- graph + geom_histogram(binwidth=1000)
+graph <- graph + labs(title = "Histogram of number of steps per day",
+                      x = "Steps per day", y = "Count")
+print(graph)
+```
 
+Let's see what are the mean and median of the total steps per day.
+```{r}
+data.mean <- mean(data.day$sum, na.rm=TRUE)
+data.median <- median(data.day$sum, na.rm=TRUE)
+```
+
+The mean of the set is `r data.mean`and its median is `r data.median`.
 
 ## What is the average daily activity pattern?
 
