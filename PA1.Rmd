@@ -1,0 +1,62 @@
+# Reproducible Research: Peer Assessment 1
+
+
+## Getting the data
+The first thing is to check if the zip file has already been downloaded. If not, download it.
+```{r}
+url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+zip.file <- "activity.zip"
+file <- "activity.csv"
+
+if(!file.exists(zip.file)) {
+    download.file(url, destfile = zip.file)
+    }
+```
+
+If the data is not unzipped yet, extract it to the current directory.
+```{r}
+if(!file.exists(file)) {
+    unzip(zip.file)
+    }
+```
+
+## Loading and preprocessing the data
+
+We read the data:
+```{r}
+data <- read.csv("activity.csv")
+```
+
+Is the data in its correct format?
+```{r}
+str(data)
+```
+
+The date variable is read as a factor, not a date. Let's correct that.
+```{r}
+data$date <- as.Date(as.character(data$date))
+str(data)
+```
+
+Ok, that's better. Let's do the homework now.
+
+## What is mean total number of steps taken per day?
+Let's first calculate the total number of steps per day.
+```{r}
+library(plyr)
+data.day <- ddply(data, .(date), summarize, sum=sum(steps))
+data.day <- tapply(data$steps, data$date, sum)
+data.day <- as.data.frame(data.day)
+```
+
+
+
+## What is the average daily activity pattern?
+
+
+
+## Imputing missing values
+
+
+
+## Are there differences in activity patterns between weekdays and weekends?
