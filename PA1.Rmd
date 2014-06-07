@@ -50,7 +50,7 @@ str(data)
 Ok, that's better. Let's do the homework now.
 
 ## What is mean total number of steps taken per day?
-Let's first calculate the total number of steps per day.
+Let's first calculate the total number of steps per day. We will use for this the ddply function, that requires the plyr library.
 ```{r}
 library(plyr)
 data.day <- ddply(data, .(date), summarize, sum=sum(steps))
@@ -75,8 +75,25 @@ data.median <- median(data.day$sum, na.rm=TRUE)
 The mean of the set is `r data.mean`and its median is `r data.median`.
 
 ## What is the average daily activity pattern?
+For this question we must first calculate the average number of steps per interval.
+```{r}
+data.interval <- ddply(data, .(interval), summarize, avg=mean(steps, na.rm=TRUE))
+```
 
+Let's see the shape it has over the day. 
+```{r, fig.width=6, fig.height=4}
+graph <- ggplot(data.interval, aes(x=interval, y=avg))
+graph <- graph + geom_line()
+graph <- graph + labs(title = "Average number of steps per interval over a day",
+                      x = "Interval", y = "Average steps per day")
+print(graph)
+```
 
+There is a clear spike in the graph. Let's find to which interval it corresponds.
+```{r}
+max.interval <- data.interval[data.interval$avg == max(data.interval$avg),][1]
+```
+The 5-minute interval with the maximum average number of steps, on average across all the days in the data set, is `r max.interval`. 
 
 ## Imputing missing values
 
