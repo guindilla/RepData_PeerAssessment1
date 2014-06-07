@@ -96,7 +96,49 @@ max.interval <- data.interval[data.interval$avg == max(data.interval$avg),][1]
 The 5-minute interval with the maximum average number of steps, on average across all the days in the data set, is `r max.interval`. 
 
 ## Imputing missing values
+There are missing values in the data set, identified with NA values. Let's see how many of those there are.
+```{r}
+data.missing <- data[is.na(data$steps),]
+nrow(data.missing)
+```
 
+That is quite a high number of missing values. Let's try to fill them using the average value per interval for the dataset. This is going to be done directly into a new dataset called data.completed.
+```{r}
+data.completed <- data
+for (day in unique(data.missing$date)) {
+    data.completed[data.completed$date == day, ]$steps <- data.interval$avg
+}
+```
+Let's check we have no missing values now.
+```{r}
+nrow(data.completed[is.na(data.completed$steps),])
+```
 
+Now let's recalculate the mean total number of steps taken per day, as previously done.
+
+Let's first calculate the total number of steps per day.
+```{r}
+new.data.day <- ddply(data.completed, .(date), summarize, sum=sum(steps))
+```
+
+Let's plot the histogram with the total number of steps taken per day. We will do it with the ggplot2 library.
+```{r, fig.width=6, fig.height=4}
+library(ggplot2)
+graph <- ggplot(new.data.day, aes(x=sum))
+graph <- graph + geom_histogram(binwidth=1000)
+graph <- graph + labs(title = "Histogram of number of steps per day",
+                      x = "Steps per day", y = "Count")
+print(graph)
+```
+
+The graph appears to be exactly the same but for an increase of the bar of 10.000-11.000 steps, which is the logical impact of substituting the NA values with the mean values for intervals.
+
+Let's see what are the mean and median of the total steps per day.
+```{r}
+new.data.mean <- mean(new.data.day$sum)
+new.data.median <- median(new.data.day$sum)
+```
+
+The mean of the new set without NAs is `r new.data.mean`and its median is `r new.data.median`. In the previous set it was `r data.mean`and its median is `r data.median`. Similarly, the difference is minimal.
 
 ## Are there differences in activity patterns between weekdays and weekends?
